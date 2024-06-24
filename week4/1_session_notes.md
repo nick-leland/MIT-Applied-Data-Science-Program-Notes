@@ -206,8 +206,112 @@ How do we label these final classes?
 We take the majority outcome of that class. 
 Did the majority leave or stay? 
 Then we can label that majority. 
-Stopping at 1:26:31
 
-## Entropy-based Greedy Algorithm
+If that group is not homogeneous, we would have a huge error! Our objective is to make teh subset as pure as possible.  The order we do this matters!! 
 
+How to we determine what feature we pick?
+
+
+## Information Gain
+We do this with **Entropy** or **impurity** measure.  
+
+### What is Entropy?
+A greedy algorithm is a step-by-step alrogirhtm.
+Entropy as a measure, measures randomness.  A higher value means more randomness, lower value means less.  
+Entropy : H(Z) = -sum(z containing Z)(P(z)log(P(z))
+
+Imagine we flip a coin:
+Coin flip with P(head) = p
+Entropy = -plogp-(1-p)log(1-p)
+
+Entropys formula is based on the overall probability outcome.  
+This is the probability times the log of that probability. 
+We do this for both outcomes.  
+
+We can then graph this and we can see the overall probability at each point of p. 
+This is a measure of homogeonity.  
+
+Lets look at another example
+Y=0 -> Flu
+Y=1 -> cold 
+X=0 -> Low Fever
+X=1 -> High Fever
+
+    | Y=0 | Y=1
+X=0 | 1/8 | 3/8 
+X=1 | 3/8 | 1/8
+
+H(Y) = H(1/2, 1/2) = 1
+If we don't have a variable, it would be a 50/50
+
+If someone walks in and says that the person has a fever, we can compare the probability outcome.  (3/8 vs 1/8)
+Now we would be able to determine the overall conditional entropy.
+
+H(Y|X=0) = -sum(P(y|x = 0) log P(y|x=0) = -1/4 log 1/4 - 3/4 log 3/4
+H(Y|X=1) = -sum(P(y|x = 1) log P(y|x=1) = -3/4 log 3/4 - 3/4 log 1/4
+
+### Information Gain
+Our goal is to maximize the information gain or minimize the information gain of the conditional. 
+Information Gain : IG(Y|X) = H(Y) - H(Y|X)
+
+If X Y then IG = 0 X is not informative
+f IG(Y|X) = H(Y) then Y is the most informative
+
+We are searching for the feature that gives us the most information
+
+Lets look at a simple boolean example.  
+
+X1 | X2 | Y
+ T |  T | T
+ T |  F | T
+ T |  T | T
+ T |  F | T
+ F |  T | T
+ F |  F | F
+ F |  T | F
+ F |  F | F
+
+X1 -> Y=t : 4, Y=f : 0
+  \ 
+ Y=t : 1, Y=f : 3
+
+X2 -> Y=t : 3, Y=f : 1
+  \ 
+ Y=t : 2, Y=f : 2
+
+X2 commits erorr on both sides, X1 however, splits the data well because we know that Y=t seperates perfectly based on X1.  
+
+The greedy algorithm takes this and performs this for every single feature that we have.  
+- STart with the complete data s
+- Pick a feature (formally: X(m))
+- Describe the data based on this feature
+{(xi(m), yi), i=1, ..., N)}
+- Split the outcome data based on the classes
+S1 = {(yi|xi(m) = 0} | S2 = {(yi|xi(m) = 1}
+- Empirically compute the conditional entropy
+H(Y|X(m))
+- Estimate:
+P(s1)H(s1) + P(s2)H(s2)
+- Pick m to minimize this (maximize information gain)
+Feature splitting = Conditioning 
+
+It is called greedy because we are optimizing based on each individual feature at a time. 
+
+Lets run the computation for an example.
+
+H(s1) = -2/5 log 2/5 - 3/5 log 3/5 = 0.97
+H(s2) = -/37 log 3/7 - 4/7 log 4/7 = 0.99
+Entropy of split 
+0.97 * 5/12 + 0.99 * 7/12 = 0.979
+IG = H(Y) - 0.979 = 1-0.979 = 0.021
+This is a low value, therefore this is not a good split. 
+
+### Gini Index
+Very similar to entropy but slightly different
+replaces -logP(x) with (1-p(x))
+This favors larger partions and is much easier to compute.
+
+Think of this as an _approximation_ while entropy is the more precise value. 
+
+What do we do if we have a continuous variable? We need to cut it into different intervals.  We woudl do this with what is called **binning** or as a numerical value. 
 
